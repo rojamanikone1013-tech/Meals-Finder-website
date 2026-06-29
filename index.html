@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Meal Finder</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Font Awesome -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<style>
+
+.sidebar{
+position:fixed;
+top:0;
+right:-320px;
+width:320px;
+height:100vh;
+background:white;
+z-index:1000;
+overflow-y:auto;
+transition:.4s;
+box-shadow:-4px 0 15px rgba(0,0,0,.2);
+}
+
+.sidebar.show{
+right:0;
+}
+
+.category-card{
+transition:.3s;
+cursor:pointer;
+}
+
+.category-card:hover{
+transform:translateY(-8px);
+}
+
+.meal-card img{
+height:250px;
+object-fit:cover;
+}
+/* Navbar */
+
+.navbar{
+    background:#f25c05;
+    height:50px;
+    padding:0 20px;
+    position:relative;
+    z-index:1000;
+}
+
+.navbar-brand{
+    font-size:1.5rem;
+    font-weight:700;
+    color:white;
+}
+
+.navbar-brand i{
+    font-size:1.2rem;
+}
+
+#menuBtn{
+    font-size:1.3rem;
+    padding:0;
+    margin:0;
+}
+
+/* Hero */
+
+.hero{
+    position: relative;
+    height:450px;
+    background:url("https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600");
+    background-size:cover;
+    background-position:center;
+}
+
+.hero::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.45);
+}
+
+.hero-content{
+    position:relative;
+    z-index:2;
+}
+
+.custom-col{
+    flex: 0 0 20%;
+    max-width: 20%;
+}
+
+@media (max-width:992px){
+    .custom-col{
+        flex: 0 0 33.33%;
+        max-width: 33.33%;
+    }
+}
+
+@media (max-width:768px){
+    .custom-col{
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (max-width:576px){
+    .custom-col{
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+.meal-card{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-body h5{
+    min-height: 60px;
+}
+#mealDetailsContainer img{
+    width:100%;
+    height:450px;
+    object-fit:cover;
+}
+
+.ingredients-box{
+    background:#f97316;
+    color:#fff;
+    border-radius:8px;
+    padding:20px;
+}
+
+.measure-box{
+    border:1px solid #ddd;
+    padding:20px;
+    margin-top:20px;
+}
+
+.instruction-item{
+    border:none ;
+    padding:10px 0;
+}
+
+.instruction-item i{
+    color:#f97316;
+    margin-right:10px;
+}
+.breadcrumb-box{
+    background:#f97316;
+    color:#fff;
+    padding:12px 20px;
+    border-radius:5px;
+    margin-bottom:20px;
+    font-weight:600;
+}
+
+.breadcrumb-box a{
+    color:#fff;
+    text-decoration:none;
+}
+
+.breadcrumb-box a:hover{
+    text-decoration:underline;
+}
+
+</style>
+</head>
+
+<body class="bg-gray-100">
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+
+        <a class="navbar-brand text-white m-0" href="#">
+            <i class="fa-solid fa-house me-2"></i>
+            MEAL FINDER
+        </a>
+
+        <button id="menuBtn" class="btn text-white border-0">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+    </div>
+</nav>
+
+<!-- SIDEBAR -->
+
+<div id="sidebar" class="sidebar">
+
+<div class="d-flex justify-content-end p-3">
+
+<button id="closeBtn"
+class="btn text-danger fs-3">
+<i class="fa-solid fa-circle-xmark"></i>
+</button>
+
+</div>
+
+<ul id="categoryList" class="list-group list-group-flush"></ul>
+
+</div>
+
+<!-- HERO -->
+
+<section
+id="heroSection"
+class="hero d-flex justify-content-center align-items-center">
+<div class="hero-content text-center text-white">
+
+<div class="d-flex justify-content-center">
+
+    <!-- Search Input -->
+<input
+id="searchInput"
+type="text"
+placeholder="Search recipes here..."
+class="form-control rounded-pill p-3 w-75">
+
+<button
+onclick="searchMeals()"
+class="btn btn-warning rounded-circle ms-2 px-4">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
+</button>
+
+</div>
+
+<h1 class="display-4 fw-bold mt-5">
+What are your favorite cuisines?
+</h1>
+
+<p class="fs-3">
+PERSONALIZE YOUR EXPERIENCE
+</p>
+
+</div>
+
+</section>
+
+<!-- Meals -->
+<div class="container py-5">
+    <div id="mealsContainer" class="row g-4"></div>
+</div>
+
+<!-- Meal Details -->
+<div class="container py-4" id="mealDetailsSection" style="display:none;">
+    <div id="mealDetailsContainer"></div>
+</div>
+
+<!-- Categories -->
+<div class="container py-5">
+    <h2 class="fw-bold mb-4">CATEGORIES</h2>
+    <div id="categoriesContainer" class="row g-4"></div>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
